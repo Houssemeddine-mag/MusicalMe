@@ -1,0 +1,64 @@
+========================================
+  MusicalMe - Quick Start Guide
+========================================
+
+STEP 1: Install Dependencies
+-----------------------------
+Double-click: setup_venv.bat
+
+This will:
+- Create a virtual environment (venv folder)
+- Install all required packages
+- Takes about 2-3 minutes
+
+STEP 2: Run MusicalMe
+--------------------
+Double-click: run.bat
+
+This will launch the application!
+
+========================================
+  Important Notes
+========================================
+
+✅ Always use setup_venv.bat FIRST (only once)
+✅ Then use run.bat every time you want to play
+
+❌ Do NOT run "python main.py" directly
+   (This will cause dependency conflicts!)
+
+========================================
+  Why Virtual Environment?
+========================================
+
+You have TensorFlow installed globally with
+different version requirements. The virtual
+environment keeps MusicalMe's dependencies
+separate, so nothing breaks! 🎉
+
+========================================
+  Gesture Controls (Quick Reference)
+========================================
+
+Left Hand Notes:
+  Thumb + Pinky  = DO (C)
+  Thumb + Ring   = RE (D)
+  Thumb + Middle = MI (E)
+  Thumb + Index  = FA (F)
+
+Right Hand Notes:
+  Thumb + Index  = SOL (G)
+  Thumb + Middle = LA (A)
+  Thumb + Ring   = SI (B)
+  Thumb + Pinky  = DO (C high)
+
+Menu:
+  Both pinkies UP = Open/Close menu
+  Index pointing = Cursor
+  Pinch = Select
+
+Press Q to quit!
+
+========================================
+Enjoy making music! 🎵
+========================================
