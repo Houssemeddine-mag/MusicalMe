@@ -32,6 +32,8 @@ class MenuSystem:
         self.selected_y_offset = 0  # For smooth selection animation
         self.target_selected_index = 0
         
+        self.should_exit_app = False  # Flag to indicate returning to hub
+        
     def update(self, gestures):
         """
         Update menu state based on gestures
@@ -124,8 +126,8 @@ class MenuSystem:
             elif selected_item == 'Colors':
                 self.current_menu = 'colors'
                 self.selected_index = 0
-            elif selected_item == 'Exit':
-                self.close_menu()
+            elif selected_item == 'Return to Hub':
+                self.should_exit_app = True
         
         elif self.current_menu == 'instruments':
             if selected_item == 'Back':

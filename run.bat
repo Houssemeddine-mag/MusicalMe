@@ -17,7 +17,7 @@ REM Activate virtual environment
 call venv\Scripts\activate.bat
 
 REM Run the application
-python main.py
+python Home/hub.py
 
 REM Deactivate when done
 deactivate

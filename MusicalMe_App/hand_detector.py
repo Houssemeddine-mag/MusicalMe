@@ -165,7 +165,9 @@ class HandDetector:
         mid_y = landmarks[mid_idx][1]
         
         # Extended if tip is above middle joint (lower y value in screen coords)
-        return tip_y < mid_y - 0.02
+        # Require a stronger vertical extension specifically for the Pinky to avoid accidental triggers
+        extension_threshold = 0.06 if finger_name == 'Pinky' else 0.02
+        return tip_y < mid_y - extension_threshold
     
     def cleanup(self):
         """Release resources"""

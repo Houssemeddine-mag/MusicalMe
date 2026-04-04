@@ -1,8 +1,9 @@
 """
 Audio synthesis engine with high-quality instrument sounds
 """
-import numpy as np
+import os
 import pygame
+import numpy as np
 from pygame import mixer
 from config import (
     SAMPLE_RATE, NOTE_FREQUENCIES, INSTRUMENTS, 
@@ -20,6 +21,95 @@ class AudioEngine:
         self.current_instrument = 'piano'
         self.active_notes = {}  # key: note_name, value: {'sound': Sound, 'channel': Channel, 'base_freq': float}
         self.note_reference_y = {}  # Track initial Y position for each note
+        
+        # Pre-load piano and guitar mp3 files
+        self.piano_sounds = {}
+        self.guitar_sounds = {}
+        self.pitched_sounds_cache = {}  # Cache for pitch-shifted notes
+        
+        # Get absolute path of this file to construct correct relative paths
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Load Piano
+        piano_files = {
+            'DO': os.path.join(base_dir, 'files', '1_DO.mp3'),
+            'RE': os.path.join(base_dir, 'files', '2_RE.mp3'),
+            'MI': os.path.join(base_dir, 'files', '3_MI.mp3'),
+            'FA': os.path.join(base_dir, 'files', '4_FA.mp3'),
+            'SOL': os.path.join(base_dir, 'files', '5_SOL.mp3'),
+            'LA': os.path.join(base_dir, 'files', '6_LA.mp3'),
+            'SI': os.path.join(base_dir, 'files', '7_SI.mp3'),
+            'DO_HIGH': os.path.join(base_dir, 'files', '8_DO_high.mp3')
+        }
+        for note, filename in piano_files.items():
+            if os.path.exists(filename):
+                self.piano_sounds[note] = mixer.Sound(filename)
+            else:
+                print(f"Warning: Piano sound file not found: {filename}")
+
+        # Load Guitar
+        guitar_files = {
+            'DO': os.path.join(base_dir, 'guitare file', 'DO.mp3'),
+            'RE': os.path.join(base_dir, 'guitare file', 'RE.mp3'),
+            'MI': os.path.join(base_dir, 'guitare file', 'MI.mp3'),
+            'FA': os.path.join(base_dir, 'guitare file', 'FA.mp3'),
+            'SOL': os.path.join(base_dir, 'guitare file', 'SOL.mp3'),
+            'LA': os.path.join(base_dir, 'guitare file', 'LA.mp3'),
+            'SI': os.path.join(base_dir, 'guitare file', 'SI.mp3'),
+            'DO_HIGH': os.path.join(base_dir, 'guitare file', 'DO HIGH.mp3')
+        }
+        for note, filename in guitar_files.items():
+            if os.path.exists(filename):
+                self.guitar_sounds[note] = mixer.Sound(filename)
+            else:
+                print(f"Warning: Guitar sound file not found: {filename}")
+                
+    def _get_pitched_sound(self, note_name, multiplier):
+        """Get a pitch-shifted version of a pre-loaded sound. Caches results for performance."""
+        import numpy as np
+        import pygame
+        
+        # Select active sample bank based on current instrument
+        sounds_bank = self.guitar_sounds if self.current_instrument == 'guitar' else self.piano_sounds
+        
+        if note_name not in sounds_bank:
+            return None
+        
+        # Don't shift if multiplier is exactly 1.0 (or very close)
+        if abs(multiplier - 1.0) < 0.01:
+            return sounds_bank[note_name]
+            
+        # Check cache
+        cache_key = (self.current_instrument, note_name, round(multiplier, 3))
+        if cache_key in self.pitched_sounds_cache:
+            return self.pitched_sounds_cache[cache_key]
+            
+        base_sound = sounds_bank[note_name]
+        try:
+            snd_array = pygame.sndarray.array(base_sound)
+            L = len(snd_array)
+            new_L = int(L / multiplier)
+            
+            old_indices = np.arange(L)
+            new_indices = np.linspace(0, L - 1, new_L)
+            
+            # Resample keeping length dynamic (changes pitch as if speeding up tape)
+            if len(snd_array.shape) == 2:
+                new_left = np.interp(new_indices, old_indices, snd_array[:, 0])
+                new_right = np.interp(new_indices, old_indices, snd_array[:, 1])
+                resampled = np.column_stack((new_left, new_right))
+            else:
+                new_mono = np.interp(new_indices, old_indices, snd_array)
+                resampled = np.column_stack((new_mono, new_mono))
+                
+            resampled = resampled.astype(np.int16)
+            new_sound = pygame.sndarray.make_sound(resampled)
+            
+            self.pitched_sounds_cache[cache_key] = new_sound
+            return new_sound
+        except Exception as e:
+            print(f"Error pitch-shifting {note_name}: {e}")
+            return base_sound
         
     def generate_waveform(self, frequency, duration=1.0, instrument='piano'):
         """
@@ -162,7 +252,7 @@ class AudioEngine:
         """
         if note_name not in NOTE_FREQUENCIES:
             return
-        
+            
         # Get base frequency
         base_freq = NOTE_FREQUENCIES[note_name]
         
@@ -172,7 +262,7 @@ class AudioEngine:
         # Limit active notes
         if len(self.active_notes) >= MAX_ACTIVE_NOTES and note_name not in self.active_notes:
             return
-        
+            
         # Check if note is already playing
         if note_name in self.active_notes:
             # If pitch hasn't changed, keep playing
@@ -186,17 +276,34 @@ class AudioEngine:
             if self.active_notes[note_name]['channel']:
                 self.active_notes[note_name]['channel'].stop()
         
-        # Generate and play sound with longer duration for smoother sustain
-        duration = 5.0  # Very long for seamless looping
-        wave = self.generate_waveform(freq, duration, self.current_instrument)
+        # Check if we should use sample banks
+        is_sample_instrument = self.current_instrument in ['piano', 'guitar']
+        active_bank = self.guitar_sounds if self.current_instrument == 'guitar' else self.piano_sounds
         
-        # Convert numpy array to pygame Sound
-        sound = mixer.Sound(wave)
-        sound.set_volume(0.5)  # Comfortable volume
-        
-        # Play on a channel - instant start, no fade
-        channel = sound.play(loops=-1)  # Loop indefinitely
-        
+        if is_sample_instrument and note_name in active_bank:
+            # Use pre-loaded MP3 file with automatic pitch shifting
+            sound = self._get_pitched_sound(note_name, pitch_multiplier)
+            if sound:
+                sound.set_volume(0.5)
+                # We don't loop indefinitely, the mp3 has its natural decay
+                channel = sound.play()
+            else:
+                # Fallback to generated if get_pitched_sound fails
+                import numpy as np
+                duration = 5.0
+                wave = self.generate_waveform(freq, duration, self.current_instrument)
+                sound = mixer.Sound(wave)
+                sound.set_volume(0.5)
+                channel = sound.play(loops=-1)
+        else:
+            # Revert to generated waveform for other instruments or missing files
+            import numpy as np
+            duration = 5.0  # Very long for seamless looping
+            wave = self.generate_waveform(freq, duration, self.current_instrument)
+            sound = mixer.Sound(wave)
+            sound.set_volume(0.5)
+            channel = sound.play(loops=-1)
+
         self.active_notes[note_name] = {
             'sound': sound,
             'channel': channel,
@@ -213,8 +320,7 @@ class AudioEngine:
             note_name: Name of the note to stop
         """
         if note_name in self.active_notes:
-            if self.active_notes[note_name]['channel']:
-                self.active_notes[note_name]['channel'].fadeout(50)  # Quick smooth fade
+            # Removed fadeout so the single note completely finishes playing for kids
             del self.active_notes[note_name]
             if note_name in self.note_reference_y:
                 del self.note_reference_y[note_name]

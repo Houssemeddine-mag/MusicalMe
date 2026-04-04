@@ -13,22 +13,29 @@ from config import CAMERA_INDEX, CAMERA_WIDTH, CAMERA_HEIGHT, FPS
 
 
 class MusicalMe:
-    def __init__(self):
+    def __init__(self, shared_camera=None, shared_hand_detector=None, shared_gesture_recognizer=None, shared_window_name=None):
         """Initialize the MusicalMe system"""
         print("Initializing MusicalMe...")
         
+        self.shared_resources = shared_camera is not None
+        self.window_name = shared_window_name if shared_window_name else 'MusicalMe - Hand Gesture Music'
+        
         # Initialize components
-        self.hand_detector = HandDetector()
-        self.gesture_recognizer = GestureRecognizer(self.hand_detector)
+        if self.shared_resources:
+            self.hand_detector = shared_hand_detector
+            self.gesture_recognizer = shared_gesture_recognizer
+            self.camera = shared_camera
+        else:
+            self.hand_detector = HandDetector()
+            self.gesture_recognizer = GestureRecognizer(self.hand_detector)
+            self.camera = cv2.VideoCapture(CAMERA_INDEX)
+            self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+            self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+            self.camera.set(cv2.CAP_PROP_FPS, FPS)
+            
         self.audio_engine = AudioEngine()
         self.ui_renderer = UIRenderer()
         self.menu_system = MenuSystem(self.ui_renderer, self.audio_engine)
-        
-        # Initialize camera
-        self.camera = cv2.VideoCapture(CAMERA_INDEX)
-        self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
-        self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
-        self.camera.set(cv2.CAP_PROP_FPS, FPS)
         
         if not self.camera.isOpened():
             print("Error: Could not open camera")
@@ -100,12 +107,14 @@ class MusicalMe:
                 self.menu_system.render(frame, gestures.get('cursor_pos'))
                 
                 # Display frame
-                cv2.imshow('MusicalMe - Hand Gesture Music', frame)
+                cv2.imshow(self.window_name, frame)
                 
                 # Handle keyboard input
                 key = cv2.waitKey(1) & 0xFF
-                if key == ord('q'):
-                    print("\nExiting MusicalMe...")
+                if key == ord('q') or self.menu_system.should_exit_app:
+                    print("\nExiting MusicalMe, returning to Hub...")
+                    # Reset the exit state for subsequent launches
+                    self.menu_system.should_exit_app = False
                     break
         
         finally:
@@ -123,17 +132,18 @@ class MusicalMe:
         
         # Update or start notes with zone-based pitch
         for note_name, note_data in current_notes.items():
-            hand_y = note_data['hand_y']
-            
-            # Get discrete pitch zone (returns semitone offset: -2, -1, 0, +1, +2)
-            semitone_offset = self.gesture_recognizer.get_pitch_zone(hand_y)
-            
-            # Convert semitones to frequency multiplier
-            pitch_multiplier = 2.0 ** (semitone_offset / 12.0)
-            
-            # Play note with zone-based pitch (no reference Y needed)
-            self.audio_engine.play_note(note_name, pitch_multiplier, hand_y)
-            self.active_note_gestures.add(note_name)
+            if note_name not in self.active_note_gestures:
+                hand_y = note_data['hand_y']
+                
+                # Get discrete pitch zone (returns semitone offset: -2, -1, 0, +1, +2)
+                semitone_offset = self.gesture_recognizer.get_pitch_zone(hand_y)
+                
+                # Convert semitones to frequency multiplier
+                pitch_multiplier = 2.0 ** (semitone_offset / 12.0)
+                
+                # Play note with zone-based pitch (no reference Y needed)
+                self.audio_engine.play_note(note_name, pitch_multiplier, hand_y)
+                self.active_note_gestures.add(note_name)
         
         # Stop notes that are no longer detected
         notes_to_stop = self.active_note_gestures - set(current_notes.keys())
@@ -145,15 +155,22 @@ class MusicalMe:
         """Clean up resources"""
         print("Cleaning up resources...")
         self.audio_engine.cleanup()
-        self.hand_detector.cleanup()
-        self.camera.release()
-        cv2.destroyAllWindows()
+        
+        # Only cleanup these hardware/heavy resources if we own them
+        if not getattr(self, 'shared_resources', False):
+            self.hand_detector.cleanup()
+            self.camera.release()
+            cv2.destroyAllWindows()
         print("Goodbye!")
 
 
 def main():
     """Entry point"""
-    app = MusicalMe()
+    window_name = 'MusicalMe - Hand Gesture Music'
+    cv2.namedWindow(window_name, cv2.WND_PROP_FULLSCREEN)
+    cv2.setWindowProperty(window_name, cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+    
+    app = MusicalMe(shared_window_name=window_name)
     app.run()
 
 
