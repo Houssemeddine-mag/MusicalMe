@@ -58,6 +58,10 @@ class YouDraw:
             {'name': 'purple', 'val': (128, 0, 128)},
             {'name': 'orange', 'val': (0, 165, 255)}
         ]
+        
+        # Brush size scale (1-5, default 3)
+        self.brush_size = 3
+        self.brush_scale = [8, 12, 16, 20, 24]  # Pixel sizes for scales 1-5
 
     def run(self):
         """Main application loop"""
@@ -133,34 +137,77 @@ class YouDraw:
                 frame = cv2.bitwise_and(frame, frame, mask=cv2.bitwise_not(mask))
                 frame = cv2.bitwise_or(frame, self.canvas)
 
-                # Draw color palette
+                # Draw color palette at the top (horizontal)
                 color_rects = []
-                palette_x = 20
-                palette_y_start = 50
-                box_size = 50
-                spacing = 10
+                palette_y = 10
+                palette_x_start = 50
+                box_size = 40
+                spacing = 5
                 
                 for idx, color_info in enumerate(self.colors_palette):
-                    rect_y = palette_y_start + idx * (box_size + spacing)
+                    rect_x = palette_x_start + idx * (box_size + spacing)
                     color_rects.append({
                         'color': color_info['val'],
-                        'rect': (palette_x, rect_y, palette_x + box_size, rect_y + box_size)
+                        'rect': (rect_x, palette_y, rect_x + box_size, palette_y + box_size)
                     })
                     # Draw filled rectangle
-                    cv2.rectangle(frame, (palette_x, rect_y), (palette_x + box_size, rect_y + box_size), color_info['val'], -1)
+                    cv2.rectangle(frame, (rect_x, palette_y), (rect_x + box_size, palette_y + box_size), color_info['val'], -1)
                     # Draw outline
                     outline_color = (255, 255, 255) if color_info['name'] == 'black' else (0, 0, 0)
                     if self.current_color == color_info['val']:
-                        cv2.rectangle(frame, (palette_x - 5, rect_y - 5), (palette_x + box_size + 5, rect_y + box_size + 5), (255, 255, 255), 3)
-                        cv2.rectangle(frame, (palette_x - 5, rect_y - 5), (palette_x + box_size + 5, rect_y + box_size + 5), (0, 0, 0), 1)
-                    cv2.rectangle(frame, (palette_x, rect_y), (palette_x + box_size, rect_y + box_size), outline_color, 2)
+                        cv2.rectangle(frame, (rect_x - 5, palette_y - 5), (rect_x + box_size + 5, palette_y + box_size + 5), (255, 255, 255), 3)
+                        cv2.rectangle(frame, (rect_x - 5, palette_y - 5), (rect_x + box_size + 5, palette_y + box_size + 5), (0, 0, 0), 1)
+                    cv2.rectangle(frame, (rect_x, palette_y), (rect_x + box_size, palette_y + box_size), outline_color, 2)
+
+                # Draw brush size scale at the top right (simplified, child-friendly)
+                brush_scale_rects = []
+                brush_x_start = w - 300
+                brush_y = 10
+                btn_size = 35
+                spacing = 8
+                
+                # Color progression for scale
+                scale_colors = [(100, 100, 255), (100, 200, 255), (0, 255, 255), (255, 200, 0), (255, 0, 0)]
+                current_color = scale_colors[self.brush_size - 1]
+                
+                # Draw minus button
+                minus_rect = (brush_x_start, brush_y, brush_x_start + btn_size, brush_y + btn_size)
+                brush_scale_rects.append({'action': 'minus', 'rect': minus_rect})
+                cv2.rectangle(frame, (brush_x_start, brush_y), (brush_x_start + btn_size, brush_y + btn_size), (80, 80, 80), -1)
+                cv2.rectangle(frame, (brush_x_start, brush_y), (brush_x_start + btn_size, brush_y + btn_size), (180, 180, 180), 2)
+                cv2.putText(frame, "-", (brush_x_start + 8, brush_y + 25), cv2.FONT_HERSHEY_DUPLEX, 1.3, (255, 255, 255), 2)
+                
+                # Draw single number display box
+                display_x = brush_x_start + btn_size + spacing
+                # Just display the colored number without a box
+                cv2.putText(frame, str(self.brush_size), (display_x, brush_y + 28), cv2.FONT_HERSHEY_DUPLEX, 1.8, current_color, 3)
+                cv2.putText(frame, str(self.brush_size), (display_x, brush_y + 28), cv2.FONT_HERSHEY_DUPLEX, 1.8, (255, 255, 255), 1)
+                
+                # Draw plus button
+                plus_x = display_x + btn_size + spacing
+                plus_rect = (plus_x, brush_y, plus_x + btn_size, brush_y + btn_size)
+                brush_scale_rects.append({'action': 'plus', 'rect': plus_rect})
+                cv2.rectangle(frame, (plus_x, brush_y), (plus_x + btn_size, brush_y + btn_size), (80, 80, 80), -1)
+                cv2.rectangle(frame, (plus_x, brush_y), (plus_x + btn_size, brush_y + btn_size), (180, 180, 180), 2)
+                cv2.putText(frame, "+", (plus_x + 8, brush_y + 25), cv2.FONT_HERSHEY_DUPLEX, 1.3, (255, 255, 255), 2)
+                
+                # Draw elegant clear button
+                clear_x = plus_x + btn_size + spacing
+                clear_rect = (clear_x, brush_y, clear_x + btn_size + 5, brush_y + btn_size)
+                brush_scale_rects.append({'action': 'clear', 'rect': clear_rect})
+                # Gradient-like effect with red
+                cv2.rectangle(frame, (clear_x, brush_y), (clear_x + btn_size + 5, brush_y + btn_size), (30, 100, 220), -1)  # Red/orange in BGR
+                cv2.rectangle(frame, (clear_x, brush_y), (clear_x + btn_size + 5, brush_y + btn_size), (100, 200, 255), 3)  # Bright border
+                # Draw simple "C" for clear
+                cv2.putText(frame, "C", (clear_x + 5, brush_y + 27), cv2.FONT_HERSHEY_DUPLEX, 1.2, (255, 255, 255), 2)
 
                 cursor_pos_norm = gestures.get('cursor_pos')
                 is_fist = False
                 fist_pos = None
                 is_drawing = False
+                index_only_extended = False  # For color selection only
 
-                # Detect if the hand is making a fist or a two-finger touch
+                # Detect hand gestures
                 if hands_data:
                     for hand_data in hands_data:
                         landmarks = hand_data['landmarks']
@@ -174,14 +221,19 @@ class YouDraw:
                             fist_pos = (int(hand_data['hand_center'][0] * w), int(hand_data['hand_center'][1] * h))
                             break
                         
-                        # New Check: Index and Middle touch (for drawing)
+                        # Gesture 1: Index finger alone extended (color selection only, no drawing)
+                        if idx_ext and not mid_ext and not rng_ext and not pnk_ext:
+                            index_only_extended = True
+                            break
+                        
+                        # Gesture 2: Index and Middle are both extended AND glued together (drawing enabled)
                         if idx_ext and mid_ext:
                             idx_tip = self.hand_detector.get_finger_tip(landmarks, 'Index')
                             mid_tip = self.hand_detector.get_finger_tip(landmarks, 'Middle')
                             dist = self.hand_detector.calculate_distance(idx_tip, mid_tip)
-                            if dist < 0.035: # Slightly relaxed threshold to tolerate fast movement blur
+                            if dist < 0.035: # Fingers glued together
                                 is_drawing = True
-                                break
+                            break
 
                 if is_fist and fist_pos:
                     fcx, fcy = fist_pos
@@ -196,18 +248,13 @@ class YouDraw:
                     cx = int(cursor_pos_norm[0] * w)
                     cy = int(cursor_pos_norm[1] * h)
                     
+                    cursor_color = (150, 0, 255) if is_drawing else (0, 0, 255)
+                    
+                    # Get pinch gesture for menu interactions
                     is_pinching = gestures.get('select', False)
-                    cursor_color = (150, 0, 255) if is_drawing or is_pinching else (0, 0, 255)
-
-                    # Smooth drawing (if we lost draw for a frame due to fast movement blur, maintain it)
-                    if is_drawing:
-                        self.pinch_loss_forgiveness = 10  # Increased forgiveness window 
-                    elif self.pinch_loss_forgiveness > 0:
-                        self.pinch_loss_forgiveness -= 1
-                        is_drawing = True
 
                     if self.menu_open:
-                        # Process Menu Hover/Click
+                        # Process Menu Hover/Click (still uses pinch for safety)
                         ex1, ey1, ex2, ey2 = exit_rect
                         if (ex1 - 15) < cx < (ex2 + 15) and (ey1 - 15) < cy < (ey2 + 15):
                             cv2.rectangle(frame, (ex1, ey1), (ex2, ey2), (150, 150, 200), -1)
@@ -229,27 +276,71 @@ class YouDraw:
                     else:
                         # Normal drawing mode
                         hit_palette = False
-                        # Check palette clicks first
-                        for col_rect in color_rects:
-                            px1, py1, px2, py2 = col_rect['rect']
-                            if (px1 - 15) < cx < (px2 + 15) and (py1 - 15) < cy < (py2 + 15):
+                        hit_brush_btn = False
+                        
+                        # Check brush size buttons first
+                        for btn_rect in brush_scale_rects:
+                            bx1, by1, bx2, by2 = btn_rect['rect']
+                            if (bx1 - 10) < cx < (bx2 + 10) and (by1 - 10) < cy < (by2 + 10):
                                 # Hover glow
-                                cv2.rectangle(frame, (px1 - 5, py1 - 5), (px2 + 5, py2 + 5), (200, 200, 200), 2)
-                                if is_pinching and not self.was_pinching and self.pinch_cooldown == 0:
-                                    self.current_color = col_rect['color']
-                                    self.pinch_cooldown = 15
-                                hit_palette = True
+                                cv2.rectangle(frame, (bx1 - 5, by1 - 5), (bx2 + 5, by2 + 5), (255, 200, 100), 2)
+                                
+                                # Handle clicks
+                                if index_only_extended and self.pinch_cooldown == 0:
+                                    if btn_rect['action'] == 'minus' and self.brush_size > 1:
+                                        self.brush_size -= 1
+                                        self.pinch_cooldown = 15
+                                    elif btn_rect['action'] == 'plus' and self.brush_size < 5:
+                                        self.brush_size += 1
+                                        self.pinch_cooldown = 15
+                                    elif btn_rect['action'] == 'clear':
+                                        self.canvas = np.zeros_like(frame)
+                                        self.pinch_cooldown = 15
+                                hit_brush_btn = True
                                 break
+                        
+                        # Check palette hovering
+                        if not hit_brush_btn:
+                            for col_rect in color_rects:
+                                px1, py1, px2, py2 = col_rect['rect']
+                                if (px1 - 15) < cx < (px2 + 15) and (py1 - 15) < cy < (py2 + 15):
+                                    # Hover glow
+                                    cv2.rectangle(frame, (px1 - 5, py1 - 5), (px2 + 5, py2 + 5), (200, 200, 200), 2)
+                                    # Select color when index is extended (alone or glued) - just by hovering
+                                    if (index_only_extended or is_drawing) and self.pinch_cooldown == 0:
+                                        self.current_color = col_rect['color']
+                                        self.pinch_cooldown = 15
+                                    hit_palette = True
+                                    break
 
                         if not hit_palette:
                             if is_drawing:
-                                # Drawing logic
+                                # Drawing logic - ONLY when both fingers are glued together
+                                brush_width = self.brush_scale[self.brush_size - 1]  # Get size based on scale
+                                
                                 if self.last_draw_pos is not None:
-                                    # Draw a line from last position to current
-                                    cv2.line(self.canvas, self.last_draw_pos, (cx, cy), self.current_color, 10)
+                                    # For smooth drawing, interpolate between points when movement is fast
+                                    dx = cx - self.last_draw_pos[0]
+                                    dy = cy - self.last_draw_pos[1]
+                                    distance = (dx**2 + dy**2) ** 0.5
+                                    
+                                    # If movement is large, add intermediate points
+                                    if distance > 15:
+                                        steps = int(distance / 10) + 1
+                                        for i in range(1, steps + 1):
+                                            t = i / (steps + 1)
+                                            ix = int(self.last_draw_pos[0] + dx * t)
+                                            iy = int(self.last_draw_pos[1] + dy * t)
+                                            cv2.circle(self.canvas, (ix, iy), max(2, brush_width // 4), self.current_color, -1)
+                                    
+                                    # Draw main line with brush size
+                                    cv2.line(self.canvas, self.last_draw_pos, (cx, cy), self.current_color, brush_width)
+                                    # Add circles at both ends for smoothness
+                                    cv2.circle(self.canvas, self.last_draw_pos, max(2, brush_width // 3), self.current_color, -1)
+                                    cv2.circle(self.canvas, (cx, cy), max(2, brush_width // 3), self.current_color, -1)
                                 else:
-                                    # Just a dot
-                                    cv2.circle(self.canvas, (cx, cy), 5, self.current_color, -1)
+                                    # Just a dot when starting
+                                    cv2.circle(self.canvas, (cx, cy), max(2, brush_width // 3), self.current_color, -1)
                                 self.last_draw_pos = (cx, cy)
                             else:
                                 self.last_draw_pos = None
