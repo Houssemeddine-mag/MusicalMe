@@ -1,6 +1,6 @@
-# MusicalMe — Technical Documentation
+# Tech Graden — Technical Documentation
 
-Complete technical reference for the **MusicalMe / Kids Play & Learn Hub** repository:
+Complete technical reference for the **Tech Graden / Kids Play & Learn Hub** repository:
 architecture, module APIs, data flow, gesture math, audio pipeline, asset inventory,
 configuration reference, and known technical debt.
 
@@ -15,12 +15,13 @@ configuration reference, and known technical debt.
 
 ## 1. What the project is
 
-MusicalMe is a **camera-based, gesture-controlled educational suite for children**. It uses
+Tech Graden is a **camera-based, gesture-controlled educational suite for children**. It uses
 MediaPipe hand tracking + OpenCV rendering + Pygame audio to turn hand movements into
 interaction — no keyboard, mouse, or controller is required at runtime.
 
-The repository is not a single app. It is a **hub** (`EducationalHub`) that hosts four
-independent activities that share one camera and one hand-tracking pipeline:
+The suite is a **hub** (`EducationalHub`) that hosts four independent activities that share
+one camera and one hand-tracking pipeline. The music activity is named **MusicalMe** and lives
+in `MusicalMe_App/`; the suite itself is Tech Graden.
 
 | Module | Folder | Purpose |
 | --- | --- | --- |
@@ -92,7 +93,7 @@ renamed without updating every importer.
 ## 3. Repository structure
 
 ```
-MusicalMe/
+TechGraden/
 ├── Home/                       # Hub / launcher
 │   ├── hub.py                  # EducationalHub: grid, hitboxes, launching, shared resources
 │   ├── inject_quiz.py          # one-off dev patch script (hard-coded path, not runtime)

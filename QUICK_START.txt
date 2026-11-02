@@ -1,5 +1,5 @@
 ========================================
-  MusicalMe - Quick Start Guide
+  Tech Graden - Quick Start Guide
 ========================================
 
 STEP 1: Install Dependencies
@@ -11,8 +11,8 @@ This will:
 - Install all required packages
 - Takes about 2-3 minutes
 
-STEP 2: Run MusicalMe
---------------------
+STEP 2: Run Tech Graden
+-----------------------
 Double-click: run.bat
 
 This will launch the application!
@@ -24,17 +24,17 @@ This will launch the application!
 ✅ Always use setup_venv.bat FIRST (only once)
 ✅ Then use run.bat every time you want to play
 
-❌ Do NOT run "python main.py" directly
+❌ Do NOT run the Python files directly
    (This will cause dependency conflicts!)
 
 ========================================
   Why Virtual Environment?
 ========================================
 
-You have TensorFlow installed globally with
-different version requirements. The virtual
-environment keeps MusicalMe's dependencies
-separate, so nothing breaks! 🎉
+You may have other Python packages installed
+globally with different version requirements.
+The virtual environment keeps Tech Graden's
+dependencies separate, so nothing breaks! 🎉
 
 ========================================
   Gesture Controls (Quick Reference)

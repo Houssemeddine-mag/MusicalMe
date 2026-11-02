@@ -1,9 +1,9 @@
 @echo off
 echo ========================================
-echo   MusicalMe - Virtual Environment Setup
+echo   Tech Graden - Virtual Environment Setup
 echo ========================================
 echo.
-echo This will create an isolated environment for MusicalMe
+echo This will create an isolated environment for Tech Graden
 echo to avoid conflicts with other Python packages.
 echo.
 
@@ -21,7 +21,7 @@ echo Activating virtual environment...
 call venv\Scripts\activate.bat
 
 echo.
-echo Installing MusicalMe dependencies...
+echo Installing Tech Graden dependencies...
 python -m pip install --upgrade pip
 
 echo Installing packages (this may take a few minutes)...
@@ -36,7 +36,7 @@ echo ========================================
 echo   Installation Complete!
 echo ========================================
 echo.
-echo To run MusicalMe, use: run.bat
+echo To run Tech Graden, use: run.bat
 echo (Do NOT run python main.py directly)
 echo.
 pause

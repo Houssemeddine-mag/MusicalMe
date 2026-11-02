@@ -1,12 +1,13 @@
-# 🎵 MusicalMe
+# 🌟 Tech Graden
 
 ### *Where little hands make big magic.*
 
-**MusicalMe is a joyful, hands-in-the-air learning suite for children.** No mouse. No keyboard.
-No touchscreen. Just wave, point, pinch — and the screen comes alive.
+**Tech Graden is a joyful, hands-in-the-air learning suite for children.** No mouse. No
+keyboard. No touchscreen. Just wave, point, pinch — and the screen comes alive.
 
-Music, math, and art, all in one bright world that a child can explore with nothing but their
-own hands.
+Inside it lives a whole little world of play. The music room is called **MusicalMe**, and
+beside it sit **Mathic** for numbers and **YouDraw** for art. Together they turn a webcam into
+a doorway: music, math, and drawing, all reachable with nothing but a child's own two hands.
 
 > 🔧 Looking for the engineering details? Everything technical lives in
 > **[documentation.md](documentation.md)**.
@@ -19,7 +20,7 @@ Picture a child sitting in front of a webcam. They raise a hand, touch their thu
 finger, and a note rings out. They move their hand higher and the pitch lifts. They open both
 hands and suddenly they're playing a chord.
 
-That moment — the wide eyes, the giggle, the *"I did that!"* — is what MusicalMe was built
+That moment — the wide eyes, the giggle, the *"I did that!"* — is what Tech Graden was built
 for.
 
 The whole suite opens with a single friendly screen: the **Kids Play & Learn Hub**. Point at
@@ -139,7 +140,7 @@ Try it once. You'll be making chords before you know it. 🎶
 
 ## 🌱 What we're dreaming up next
 
-MusicalMe is a living project, and there's so much more to come:
+Tech Graden is a living project, and there's so much more to come:
 
 - 🅰️ **Alphabet, TheZoo, and CarRoad** — three new worlds already waiting as tiles on the Hub,
   ready to be brought to life.
@@ -176,7 +177,7 @@ If something doesn't quite work, the friendly troubleshooting guide in
 
 ## 🤝 Made with care
 
-MusicalMe was created for children — for their curiosity, their focus, and their delight in
+Tech Graden was created for children — for their curiosity, their focus, and their delight in
 making something happen in the world. It's free to use for educational and creative purposes.
 
 If you build something with it, teach with it, or simply watch a child's face light up while

@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo   Starting MusicalMe
+echo   Starting Tech Graden
 echo ========================================
 echo.
 
