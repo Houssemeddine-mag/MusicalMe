@@ -1,348 +1,189 @@
-# MusicalMe 🎵
+# 🎵 MusicalMe
 
-**A gesture-controlled learning suite for kids — play music, practice math, and draw, all with your hands.**
+### *Where little hands make big magic.*
 
-MusicalMe turns a webcam into the only controller a child needs. Wave, point, pinch, and
-draw in the air; MediaPipe reads your hands, OpenCV draws the world, and Pygame makes the
-sound. No keyboard, no mouse, no touchscreen — and no internet connection.
+**MusicalMe is a joyful, hands-in-the-air learning suite for children.** No mouse. No keyboard.
+No touchscreen. Just wave, point, pinch — and the screen comes alive.
 
-> 📘 For the full architecture, module APIs, tuning guide, and technical debt, see
+Music, math, and art, all in one bright world that a child can explore with nothing but their
+own hands.
+
+> 🔧 Looking for the engineering details? Everything technical lives in
 > **[documentation.md](documentation.md)**.
 
 ---
 
-## Table of contents
+## ✨ A warm welcome
 
-- [What's inside](#whats-inside)
-- [Quick start](#quick-start)
-- [Gesture cheat sheet](#gesture-cheat-sheet)
-- [App descriptions](#app-descriptions)
-- [Why this project is good](#why-this-project-is-good)
-- [Future perspectives](#future-perspectives)
-- [Tech stack](#tech-stack)
-- [Project structure](#project-structure)
-- [Troubleshooting](#troubleshooting)
-- [License](#license)
+Picture a child sitting in front of a webcam. They raise a hand, touch their thumb to a
+finger, and a note rings out. They move their hand higher and the pitch lifts. They open both
+hands and suddenly they're playing a chord.
 
----
+That moment — the wide eyes, the giggle, the *"I did that!"* — is what MusicalMe was built
+for.
 
-## What's inside
-
-`run.bat` opens the **Kids Play & Learn Hub** — a full-screen launcher with big, friendly
-tiles. Point at a tile and pinch to open it; pinch the exit icon (or press `q`) to leave.
-
-| Activity | What it teaches | Highlights |
-| --- | --- | --- |
-| 🎹 **MusicalMe** | Music, rhythm, coordination | 8 notes, chords, 5 pitch zones, 4 instruments, 4 color themes |
-| ➗ **Mathic** | Arithmetic and number recognition | Equation builder, 4-level quiz, English/French pronunciation |
-| 🎨 **YouDraw** | Creativity and fine motor control | 10-color palette, 5 brush sizes, fist eraser, clear canvas |
-| 🏠 **Hub** | Independence and navigation | Gesture-only app switching with one shared camera |
-
-Three of the hub tiles — Alphabet, TheZoo, and CarRoad — are visible placeholders for
-future activities.
+The whole suite opens with a single friendly screen: the **Kids Play & Learn Hub**. Point at
+a picture, pinch, and you're inside. Point at the door, pinch, and you're back. Even finding
+your way around feels like play.
 
 ---
 
-## Quick start
+## 🌈 What's waiting inside
 
-### Windows (recommended)
+### 🎹 MusicalMe — *make some noise*
+Turn your hands into an instrument. Eight notes, played by touching your thumb to different
+fingers, spread across both hands so chords feel natural. Raise your hand to lift the pitch,
+lower it to bring it down. Choose a piano, a guitar, a synthesizer, or a flute — and paint the
+screen in blue, green, purple, or red.
 
-1. **Double-click `setup_venv.bat`** — creates an isolated environment and installs all
-   pinned dependencies (about 2–3 minutes).
-2. **Double-click `run.bat`** — launches the hub.
+**Perfect for:** rhythm, listening, coordination, and the pure joy of making sound.
 
-That's it. 🎉
+### ➗ Mathic — *numbers that play back*
+Three ways to fall in love with numbers:
 
-> Always use `run.bat` rather than `python main.py` directly: it guarantees the isolated
-> environment, which avoids conflicts with globally installed TensorFlow/MediaPipe builds.
+- **Builder** — build an equation piece by piece, then watch it shrink away as the answer
+  appears in bright green.
+- **Quiz** — four friendly levels, from single digits to three-digit challenges. Get it
+  right and the screen celebrates. Get it wrong and it simply says *"ooh, try again."*
+- **Learn** — meet the numbers 0 through 9, big and beautiful, and hear them spoken in
+  **English** and **Français**.
 
-### Manual installation
+**Perfect for:** early arithmetic, number recognition, and bilingual listening.
 
-```bash
-python -m venv venv
-venv\Scripts\activate.bat        # Windows
-source venv/bin/activate         # macOS / Linux
+### 🎨 YouDraw — *draw with the air*
+Pick a color, pick a brush, and draw — no paper, no mess. Point with one finger to choose,
+hold two fingers together to paint, and close your fist to erase. Fast movements stay smooth,
+so swooshes and loops look lovely.
 
-pip install -r requirements.txt
-python Home/hub.py               # full hub
-```
+**Perfect for:** creativity, fine motor control, and letting imagination run the show.
 
-**Requirements:** Python 3.8+, a webcam, speakers, and a desktop session for OpenCV windows.
-
-### Run a single activity
-
-```bash
-python MusicalMe_App/main.py     # music only
-python Mathic/mathic_game.py     # math only
-python YouDraw/youdraw_game.py   # drawing only
-```
+### 🏠 The Hub — *a home base*
+A bright, welcoming launch screen where every activity is a big, friendly picture. Hover and
+it grows. Pinch and it opens. The camera stays warm the whole time, so hopping from music to
+math to drawing feels instant — no waiting, no lost momentum.
 
 ---
 
-## Gesture cheat sheet
+## 🖐️ The magic moves
 
-### Playing notes (MusicalMe)
+Learning the gestures takes about a minute. After that, it's pure instinct.
+
+| What you do | What happens |
+| --- | --- |
+| 👆 Point with your index finger | Your cursor follows you |
+| 🤏 Touch thumb and index together | *Click!* — choose anything |
+| 🤙 Raise just your pinky | The menu opens or closes |
+| ✋ Touch thumb to different fingers | Play different notes |
+| ↕️ Move your hand up and down | Change the pitch |
+| 🙌 Use both hands | Play chords |
+| ✊ Close your fist (in YouDraw) | Erase |
+| ⌨️ Press **Q** | Head back to the Hub |
+
+### 🎼 The note map
 
 | Left hand | Note | Right hand | Note |
 | --- | --- | --- | --- |
-| Thumb + Pinky | **DO** (C4) | Thumb + Index | **SOL** (G4) |
-| Thumb + Ring | **RE** (D4) | Thumb + Middle | **LA** (A4) |
-| Thumb + Middle | **MI** (E4) | Thumb + Ring | **SI** (B4) |
-| Thumb + Index | **FA** (F4) | Thumb + Pinky | **DO** (C5) |
-
-- **Sustain** — keep the two fingers touching.
-- **Chords** — use both hands at the same time (up to 8 notes).
-- **Pitch** — the screen is split into 5 bands: hand high = **+2** semitones, hand low =
-  **−2** semitones, middle = no shift.
-
-### Everywhere
-
-| Gesture | Action |
-| --- | --- |
-| Point with index finger | Move the cursor |
-| Touch thumb + index (pinch) | Select / click |
-| Pinky up, other fingers curled | Open or close the menu |
-| Press `q` | Quit the current app |
-
-### Mathic and YouDraw extras
-
-| Gesture | Mathic | YouDraw |
-| --- | --- | --- |
-| Pinch | Tap buttons, enter digits, check answers | Tap palette, brush buttons, menu |
-| Index + middle glued together | — | Draw |
-| Closed fist | — | Erase (40 px circle) |
-| Index only | — | Choose color or brush size |
+| Thumb + Pinky | **DO** | Thumb + Index | **SOL** |
+| Thumb + Ring | **RE** | Thumb + Middle | **LA** |
+| Thumb + Middle | **MI** | Thumb + Ring | **SI** |
+| Thumb + Index | **FA** | Thumb + Pinky | **DO** *(higher)* |
 
 ---
 
-## App descriptions
+## 🚀 Getting started is two clicks
 
-### 🏠 The Hub
+**On Windows:**
 
-A single full-screen launcher built on one camera feed and one hand-tracking model.
-Hovered tiles pop out to 110% and use generous 30 px hitboxes, because small hands are not
-precise. Every activity receives the hub's live camera and detector, so switching apps is
-nearly instant instead of restarting the webcam and MediaPipe model. The hub flushes stale
-frames on return so a lingering pinch cannot re-open the app you just left.
+1. Double-click **`setup_venv.bat`** — this sets everything up. Grab a juice; it takes a few
+   minutes.
+2. Double-click **`run.bat`** — and the Hub appears.
 
-### 🎹 MusicalMe
+That's the whole story. 🎉
 
-The flagship activity. Eight notes are mapped to thumb-to-fingertip touches, split across
-both hands, so chords are natural. Vertical hand position selects one of five discrete pitch
-zones (±2 semitones, equal temperament) — discrete zones were chosen over continuous bending
-because they are far more predictable for children. Four instruments are available:
-
-- **Piano** — real MP3 samples with rich sustain
-- **Guitar** — real MP3 samples with natural decay
-- **Synthesizer** — detuned square wave
-- **Flute** — sine wave with vibrato and breath noise
-
-Pitch changes are produced by resampling the samples with NumPy and caching the result, so
-even ±2 semitones stay responsive. The in-app menu (Instruments, Colors, Return to Hub) is
-driven by the same index-finger cursor and pinch used everywhere else.
-
-### ➗ Mathic
-
-Three distinct learning modes behind one gesture menu:
-
-- **Builder** — assemble an equation from digits and `+ − x /`, then watch it shrink and the
-  answer pop in green.
-- **Quiz** — four difficulty levels with clean, integer-friendly questions; correct answers
-  turn green, wrong ones turn red, and a pinch brings the next equation.
-- **Learn** — a large number card for each digit 0–9, with **English** and **Français**
-  pronunciation buttons.
-
-Digit artwork (`numbers/*.png`) and recorded pronunciations (`en_num/`, `fr_n/`) make the
-mode usable by pre-readers.
-
-### 🎨 YouDraw
-
-A gesture painting app with a real canvas model: strokes are composited through a mask, so
-drawings sit cleanly over the camera image. The draw pose is index + middle fingers held
-together — pointing with one finger selects colors and brush sizes without painting by
-accident. Fast motion is interpolated so lines stay smooth, brush width is applied as both a
-line and end-caps, and a closed fist becomes a 40 px eraser. The pinky menu offers
-**Clear Canvas** and **Return to Hub**.
+**What you'll need:** a computer with a webcam, a speaker or headphones, and a little space to
+wave your arms.
 
 ---
 
-## Why this project is good
+## 💛 Why families and teachers love it
 
-**For children**
+**It meets kids where they are.**
+Not every child takes to a mouse or a controller. Hands, though? Everyone has those. The
+gestures are big, forgiving, and generous — because small hands aren't precise, and they
+shouldn't have to be.
 
-- **No physical controller** — accessible for kids who struggle with mice, keyboards, or
-  gamepads, and motivating for kids who do not.
-- **Large targets and forgiving hitboxes** — 30 px padding, 110% hover pop-outs, and
-  cooldowns tuned for imprecise movement.
-- **Immediate feedback** — sound on touch, color on hover, green/red quiz feedback, live
-  drawing.
-- **Multiple intelligences** — music, logic, and art in one place, with bilingual number
-  audio.
-- **Safe and offline** — no accounts, no ads, no network traffic, no data leaves the machine.
+**It rewards curiosity instantly.**
+Touch a finger, hear a note. Hover a picture, watch it grow. Get an answer right, see it turn
+green. Every action answers back right away, which is exactly how children learn best.
 
-**For developers and educators**
+**It brings three worlds together.**
+Music, math, and art in one place — so a child who lights up at sound can drift into numbers,
+and a child who loves drawing can stumble into melody.
 
-- **Clean separation of concerns** — vision, gesture rules, audio, UI, menus, and activities
-  live in separate modules with narrow interfaces.
-- **One shared camera pipeline** — the hub injects camera + detector + recognizer into each
-  activity, cutting startup cost and hardware contention.
-- **No model training** — gestures are geometric rules over 21 landmarks, so behavior is
-  inspectable, debuggable, and tunable with a single constant.
-- **Graceful degradation** — missing audio files fall back to synthesized waveforms; missing
-  logos fall back to drawn rectangles. The app still runs.
-- **Easy to extend** — a new activity is one class plus one hub registry entry; a new
-  instrument or note is a dictionary edit.
-- **Reproducible setup** — pinned dependencies and a one-click environment bootstrap.
+**It speaks more than one language.**
+Numbers are read aloud in English and French, turning a simple counting game into a first
+step toward another language.
 
-**Engineering choices worth noting**
+**It's calm, safe, and completely offline.**
+No accounts. No ads. No internet. No data ever leaves the room. Just a child, a screen, and
+their own two hands.
 
-- Discrete pitch zones over continuous bending (predictability for kids).
-- Tape-style resampling with a pitch cache (cheap, responsive, musically acceptable at
-  ±2 semitones).
-- Notes are allowed to ring out after the gesture ends, which feels musical rather than
-  robotic.
-- Pinch and menu toggles use frame-based cooldowns plus edge detection
-  (`is_pinching and not was_pinching`) to avoid double clicks.
-- Handedness is computed on a pre-mirrored frame, then the display is mirrored again, so the
-  on-screen hand matches the child's real hand.
+**It grows with them.**
+Four quiz levels, five brush sizes, four instruments, ten colors, five pitch zones. There is
+always one more thing to try.
+
+**And it's genuinely fun for grown-ups too.**
+Try it once. You'll be making chords before you know it. 🎶
 
 ---
 
-## Future perspectives
+## 🌱 What we're dreaming up next
 
-**Packaging and distribution**
+MusicalMe is a living project, and there's so much more to come:
 
-- Ship a standalone Windows build with PyInstaller (or an installer) so families do not need
-  Python at all.
-- Add a macOS/Linux launcher (`run.sh`) and CI that verifies imports and asset presence.
-
-**Repository hygiene**
-
-- Add `.gitignore`, remove `venv/` and `__pycache__` from tracking, and move large media to
-  Git LFS. This alone would shrink the repository from ~400 MB to a few MB.
-- Retire the one-off `Home/patch*.py` scripts (hard-coded paths) or move them to `tools/`.
-
-**Smoother interaction**
-
-- Add One Euro / Kalman smoothing to the cursor for steadier pointing.
-- Add a short calibration step (hand size, lighting, dominant hand) and a left-handed mode.
-- Support dynamic resolutions instead of fixed 1280×720 coordinates.
-- Replace frame-count cooldowns with time-based cooldowns so behavior is consistent on
-  faster or slower machines.
-
-**More learning content**
-
-- Complete the **Alphabet**, **TheZoo**, and **CarRoad** tiles.
-- Add solfège/note-reading lessons, rhythm exercises, and a "follow the melody" mode.
-- Expand Mathic with multiplication tables, fractions, and progress tracking for teachers.
-- Add more languages to the number pronunciation system.
-
-**Musical depth**
-
-- Record and replay performances; export to MIDI or WAV.
-- Add more instruments and velocity control (hand distance → volume).
-- Visualize chords and note history on screen.
-
-**Accessibility**
-
-- Voice prompts and audio cues for every button.
-- High-contrast and large-text UI modes.
-- Support for single-hand use and reduced-motion settings.
-- Optional keyboard fallback so the suite is usable without a camera.
-
-**Robustness**
-
-- Unit tests for gesture geometry, pitch mapping, and quiz generation.
-- Safe arithmetic parsing in Mathic instead of `eval()`.
-- Structured logging and a startup self-check for camera, audio, and assets.
-- Frame pacing and optional threaded camera capture to reduce latency.
+- 🅰️ **Alphabet, TheZoo, and CarRoad** — three new worlds already waiting as tiles on the Hub,
+  ready to be brought to life.
+- 🎼 **Music games** — follow-the-melody challenges, rhythm exercises, and a friendly
+  introduction to reading notes.
+- 🧮 **Deeper math** — multiplication tables, fractions, and gentle progress tracking so
+  teachers can see a child's journey.
+- 🌍 **More languages** — the same warm bilingual idea, extended to more of the world.
+- 🎤 **Voice and sound cues** — so every button can introduce itself out loud.
+- 🖐️ **Even smoother gestures** — steadier pointing, a quick one-time calibration, and a
+  left-handed mode.
+- 📦 **One-click install** — so families can start playing without ever seeing a setup step.
+- 🎁 **Sharing** — save a drawing, replay a performance, and send a little moment of joy to
+  someone you love.
+- ♿ **Accessibility first** — high-contrast visuals, larger text, reduced motion, and a
+  keyboard fallback so every child can join in.
 
 ---
 
-## Tech stack
+## 💡 A few tips for a happy first session
 
-| Layer | Technology |
-| --- | --- |
-| Hand tracking | MediaPipe Hands (21 landmarks, 2 hands) |
-| Video I/O and drawing | OpenCV (`opencv-python`) |
-| Audio | Pygame mixer + NumPy synthesis/resampling |
-| Numerics | NumPy |
-| Language | Python 3.8+ |
+1. **Find good light.** Face a window or a lamp — hands are easier to see in soft, even light.
+2. **Sit close.** About one to two feet from the camera, with both hands in view.
+3. **Keep the background simple.** A plain wall helps the camera follow your hands.
+4. **Be a little dramatic.** Clear, deliberate gestures work beautifully — and they're more
+   fun anyway.
+5. **Start with MusicalMe.** It's the most immediate "wow," and it teaches the two core moves
+   — pointing and pinching — that every other activity uses.
 
-Pinned versions:
-
-```
-opencv-python==4.8.1.78
-mediapipe==0.10.8
-pygame==2.5.2
-numpy==1.24.3
-protobuf==3.20.3
-```
+If something doesn't quite work, the friendly troubleshooting guide in
+**[documentation.md](documentation.md)** has you covered.
 
 ---
 
-## Project structure
+## 🤝 Made with care
 
-```
-MusicalMe/
-├── Home/                  # Hub launcher (entry point: hub.py)
-├── MusicalMe_App/         # Music activity + shared vision engine
-│   ├── main.py            # MusicalMe app loop
-│   ├── hand_detector.py   # MediaPipe wrapper
-│   ├── gesture_recognizer.py
-│   ├── audio_engine.py
-│   ├── ui_renderer.py
-│   ├── menu_system.py
-│   ├── config.py
-│   ├── files/             # Piano samples
-│   └── guitare file/      # Guitar samples
-├── Mathic/                # Math activity (Builder / Quiz / Learn)
-├── YouDraw/               # Drawing activity
-├── logos/                 # Hub + Mathic backgrounds, app logos, loading art
-├── numbers/               # 0–9 digit artwork
-├── en_num/                # English digit audio
-├── fr_n/                  # French digit audio
-├── requirements.txt
-├── setup_venv.bat
-├── run.bat
-├── QUICK_START.txt
-├── README.md
-└── documentation.md       # Full technical reference
-```
+MusicalMe was created for children — for their curiosity, their focus, and their delight in
+making something happen in the world. It's free to use for educational and creative purposes.
+
+If you build something with it, teach with it, or simply watch a child's face light up while
+using it, we'd love to hear about it.
 
 ---
 
-## Tips for best results
+### 🎶 Now go on — raise a hand, and make some magic.
 
-1. **Lighting** — face a window or lamp; avoid strong backlight.
-2. **Distance** — sit 1–2 feet from the camera with both hands in frame.
-3. **Background** — a plain wall helps MediaPipe hold tracking.
-4. **Deliberate gestures** — touch thumb and finger clearly; hold the pinky pose briefly.
-5. **Camera choice** — if the wrong webcam opens, change `CAMERA_INDEX` in
-   `MusicalMe_App/config.py` to `1` or `2`.
-
----
-
-## Troubleshooting
-
-| Problem | Fix |
-| --- | --- |
-| `Virtual environment not found` | Run `setup_venv.bat` first |
-| Dependency conflicts | Never run `python main.py` globally; use `run.bat` |
-| Camera not detected | Close other camera apps; try `CAMERA_INDEX` 1 or 2 |
-| Hand not detected | Improve lighting; lower `DETECTION_CONFIDENCE` to 0.6 |
-| Notes trigger accidentally | Lower `FINGER_TOUCH_THRESHOLD` to 0.04 |
-| Menu opens by itself | Raise the pinky threshold in `hand_detector.is_finger_extended` |
-| No sound | Check output device and volume; verify the MP3 folders exist |
-| Audio crackles | Raise `AUDIO_BUFFER_SIZE` to 4096 |
-| Windows do not appear (Linux) | Install `libgl1`, SDL2, and PortAudio packages |
-
-More detail is in **[documentation.md](documentation.md)** §14–§15.
-
----
-
-## License
-
-Created for educational and creative purposes.
-
-## Enjoy making music! 🎶
+**[Read the full technical documentation →](documentation.md)**
