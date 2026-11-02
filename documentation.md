@@ -4,7 +4,7 @@ Complete technical reference for the **MusicalMe / Kids Play & Learn Hub** repos
 architecture, module APIs, data flow, gesture math, audio pipeline, asset inventory,
 configuration reference, and known technical debt.
 
-- **Repository:** `https://github.com/Houssemeddine-mag/MusicalMe`
+- **Repository:** `https://github.com/Houssemeddine-mag/TechGraden`
 - **Branch:** `main`
 - **Entry point:** `Home/hub.py` (via `run.bat`)
 - **Language:** Python 3.10 (project targets Python 3.8+)
